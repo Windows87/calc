@@ -1,0 +1,267 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, shrink-to-fit=no">
+
+    <title>Calc!</title>
+    <meta name="description" content="Calculator Game">
+    <meta name="author" content="Yuri Faria">
+
+    <!-- Google+ / Schema.org -->
+    <meta itemprop="name" content="Calc!">
+    <meta itemprop="description" content="Calculator Game">
+
+    <!-- Open Graph Facebook -->
+    <meta property="og:title" content="Calc!">
+    <meta property="og:description" content="Calculator Game">
+    <meta property="og:url" content="https://windows87.github.io/calc/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter -->
+    <meta property="twitter:title" content="Calc!">
+    <meta property="twitter:description" content="Calculator Game">
+    <meta property="twitter:url" content="https://windows87.github.io/calc/">
+    <meta property="twitter:card" content="summary">    
+
+    <style>
+      @font-face {
+      	font-family: Calculator;
+      	src: url(Calculator.ttf);
+      }
+
+      body {
+      	width: 100%;
+      	height: 100%;
+      	display: flex;
+      	flex-direction: column;
+      	font-family: Calculator;
+      	margin: 0;
+      	user-select: none;
+      }
+
+      .startPlay-container, .end-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .end-container {
+        display: none;
+      }
+
+      .startPlay-container h1, .end-container h1 {
+        font-size: 80px;
+        margin: 8px;
+      }
+
+      .startPlay-container span, .end-container span {
+        font-size: 25px;
+        color: gray;
+	      cursor: pointer;
+        transition: 0.5s all;
+      }
+
+      .startPlay-container span:hover {
+        color: #4f4f4f;
+      }
+
+      .calculator-top {
+      	width: 100%;
+      	display: flex;
+      	flex-direction: row;
+      }
+
+      .calculator-screen {
+      	flex: 1;
+      	padding: 8px;
+      	background-color: #307b30;
+	      color: white;
+      	font-size: 30px;
+      	display: flex;
+      	align-items: center;
+	      transition: all 0.5s;
+      }
+
+      .calculator-screen-error {
+        background-color: red;
+      }
+
+      .calculator-screen-correct {
+        background-color: #26de26;
+      }
+
+      .calculator-time {
+      	width: 100px;
+      	height: 100px;
+      	background-color: #2d2d2d;
+	      color: white;
+      	display: flex;
+      	justify-content: center;
+      	align-items: center;
+      	font-size: 30px;
+      }
+
+      .calculator-buttons {
+      	flex: 1 1 1;
+      	display: flex;
+      	flex-wrap: wrap;
+      	height: calc(100% - 100px);
+      }
+
+      .calculator-button {
+      	flex: 1 1 25%;
+      	background-color: #7b7a7a;
+	color: white;
+      	font-size: 50px;
+      	display: flex;
+      	align-items: center;
+      	justify-content: center;
+      	transition: 0.5s all;
+      }
+
+      .calculator-button:hover {
+      	background-color: #676767;
+      }
+    </style>
+  </head>
+
+  <body onkeyup="keyUp(event)">
+    <div class="startPlay-container">
+      <h1>Calc!</h1>
+      <span onclick="start()">Play</span>
+    </div>
+
+    <div class="end-container">
+      <h1 class="win-questions">0 Hits</h1>
+    </div>
+  
+    <div class="calculator-top">
+      <div class="calculator-screen">123+321=</div>
+      <div class="calculator-time">00:30</div>
+    </div>
+
+    <div class="calculator-buttons">
+      <div class="calculator-button" onclick="buttonClick(0)">0</div>
+      <div class="calculator-button" onclick="buttonClick(1)">1</div>
+      <div class="calculator-button" onclick="buttonClick(2)">2</div>
+      <div class="calculator-button" onclick="buttonClick(3)">3</div>
+      <div class="calculator-button" onclick="buttonClick(4)">4</div>
+      <div class="calculator-button" onclick="buttonClick(5)">5</div>
+      <div class="calculator-button" onclick="buttonClick(6)">6</div>
+      <div class="calculator-button" onclick="buttonClick(7)">7</div>
+      <div class="calculator-button" onclick="buttonClick(8)">8</div>
+      <div class="calculator-button" onclick="buttonClick(9)">9</div>
+      <div class="calculator-button" onclick="backClick()"><</div>
+      <div class="calculator-button" onclick="response()">=</div>
+    </div>
+
+   <script>
+     let counter = 30;
+     let firstParam = 0;
+     let secondParam = 0;
+     let wins = 0;	
+     let gameStarted = false;
+     let userResponse = '';
+     let timeInterval;
+
+     function start() {
+       document.querySelector('.startPlay-container').style['display'] = 'none';
+       setRandomParams();
+       timeInterval = setInterval(() => {
+         counter--;
+         document.querySelector('.calculator-time').innerText = `00:${counter.toString().length === 1 ? `0${counter}` : counter }`;
+         
+         if(!counter)
+          resetGame();
+
+         gameStarted = true; 
+       }, 1000);
+     }
+
+
+     function resetGame() {
+       document.querySelector('.end-container').style['display'] = 'flex';
+       document.querySelector('.win-questions').innerText = `${wins} Hits`;
+
+       clearInterval(timeInterval);
+       
+       counter = 30;
+       userResponse = '';
+       wins = 0;
+
+
+       setTimeout(() => {
+         document.querySelector('.end-container').style['display'] = 'none';
+         document.querySelector('.startPlay-container').style['display'] = 'flex';
+         gameStarted = false;
+       }, 5000);
+     }
+
+     function setRandomParams() {
+       firstParam = Math.floor(Math.random() * 10);
+       secondParam = Math.floor(Math.random() * 10);
+
+       document.querySelector('.calculator-screen').innerText = `${firstParam} x ${secondParam} = `;
+     }
+
+     function backClick() {
+       if(!userResponse.length)
+        return;
+
+      userResponse = userResponse.slice(0, userResponse.length - 1);
+
+       const calculatorScreen = document.querySelector('.calculator-screen');
+
+       calculatorScreen.innerText = `${calculatorScreen.innerText.slice(0, calculatorScreen.innerText.length - 1)}`;
+     }
+
+     function buttonClick(button) {
+       userResponse = `${userResponse}${button}`;
+       document.querySelector('.calculator-screen').innerText = `${document.querySelector('.calculator-screen').innerText}${button}`;
+     }
+
+     function response() {
+       let correctAnswer = firstParam * secondParam;
+       let isCorrect = correctAnswer === Number(userResponse);
+
+       if(correctAnswer === Number(userResponse)) {
+         document.querySelector('.calculator-screen').classList = ['calculator-screen-correct calculator-screen'];
+         wins++;
+       } else {
+         document.querySelector('.calculator-screen').classList = ['calculator-screen-error calculator-screen'];
+       }
+
+       setTimeout(() => {
+         document.querySelector('.calculator-screen').classList = ['calculator-screen'];
+         userResponse = '';
+         setRandomParams();
+       }, 1500);
+     }
+
+     function keyUp(event) {
+      const key = event.key;
+      const isNumber = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].indexOf(key) !== -1;
+
+      if(!gameStarted) {
+        if(key === 'Enter')
+          start();
+        return;
+      }
+
+      if(isNumber)
+        return buttonClick(key);
+
+      if(key === 'Backspace')
+        return backClick();
+
+      if(key === 'Enter')
+        return response();
+     }
+   </script>
+  </body>
+</html>
